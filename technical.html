@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MayaFlux Technical Documentation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #181a20;
+            font-family: "Fira Code", monospace;
+            color: #e2e4ea;
+        }
+
+        .header {
+            text-align: center;
+            padding: 1.5em;
+            background: #23253a;
+            border-bottom: 2px solid #2e3147;
+        }
+
+        .header h1 {
+            margin: 0 0 0.3em 0;
+            color: #b7c4ff;
+            font-size: 1.8em;
+        }
+
+        .header p {
+            margin: 0;
+            color: #a3a7c7;
+            font-family: Georgia, serif;
+        }
+
+        .viewer-container {
+            width: 100%;
+            height: calc(100vh - 140px);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #2e3147;
+            border-radius: 8px;
+            background: #23253a;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #7a7ad9;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .back-link:hover {
+            color: #b7c4ff;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="index.html" class="back-link">← Back to Poster</a>
+    <div class="header">
+        <h1>MayaFlux: Technical Deep Dive</h1>
+        <p>ADC25 Supplementary Material — Architectural Documentation</p>
+    </div>
+    <div class="viewer-container">
+        <iframe
+            src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://mayaflux.github.io/mayaflux-adc25/assets/technical-deep-dive.pdf"></iframe>
+    </div>
+</body>
+
+</html>
