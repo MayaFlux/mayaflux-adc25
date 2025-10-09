@@ -1,0 +1,475 @@
+:root {
+    --bg-primary: #1a1c24;
+    --bg-secondary: #23253a;
+    --bg-code: #2a2d3e;
+    --border-color: #2e3147;
+    --text-primary: #e2e4ea;
+    --text-secondary: #a3a7c7;
+    --accent-primary: #7a7ad9;
+    --accent-secondary: #b7c4ff;
+    --link-color: #8b8bdb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Georgia", "Cambria", "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Table of Contents styling */
+nav#TOC {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1.5em;
+    margin: 2em 0;
+}
+
+nav#TOC>ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+nav#TOC ul ul {
+    list-style: none;
+    margin-left: 1.5em;
+    margin-top: 0.5em;
+}
+
+nav#TOC li {
+    margin-bottom: 0.6em;
+}
+
+nav#TOC>ul>li {
+    font-weight: 600;
+    margin-bottom: 1em;
+}
+
+nav#TOC>ul>li>ul>li {
+    font-weight: 400;
+    margin-bottom: 0.4em;
+}
+
+nav#TOC a {
+    color: var(--link-color);
+}
+
+nav#TOC a:hover {
+    color: var(--accent-secondary);
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Fira Code", "JetBrains Mono", "Consolas", monospace;
+    font-weight: 600;
+    color: var(--accent-secondary);
+    margin-top: 2em;
+    margin-bottom: 0.8em;
+    line-height: 1.3;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-top: 0;
+    padding-bottom: 0.3em;
+    border-bottom: 3px solid var(--border-color);
+    color: var(--accent-primary);
+}
+
+h2 {
+    font-size: 1.8em;
+    padding-bottom: 0.2em;
+    border-bottom: 2px solid var(--border-color);
+    margin-top: 2.5em;
+}
+
+h3 {
+    font-size: 1.4em;
+    color: var(--text-primary);
+}
+
+h4 {
+    font-size: 1.2em;
+    color: var(--text-secondary);
+}
+
+/* Paragraphs and text */
+p {
+    margin-bottom: 1.2em;
+    color: var(--text-primary);
+}
+
+strong {
+    color: var(--accent-secondary);
+    font-weight: 600;
+}
+
+em {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Links */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+a:hover {
+    border-bottom-color: var(--link-color);
+}
+
+/* Code blocks */
+code {
+    font-family: "Fira Code", "JetBrains Mono", "Consolas", monospace;
+    font-size: 0.9em;
+    background: var(--bg-code);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    color: #e8c4b8;
+}
+
+pre {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1.2em;
+    overflow-x: auto;
+    margin: 1.5em 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 0.85em;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+/* Lists */
+ul,
+ol {
+    margin-left: 1.8em;
+    margin-bottom: 1.2em;
+}
+
+li {
+    margin-bottom: 0.5em;
+    color: var(--text-primary);
+}
+
+ul ul,
+ol ol,
+ul ol,
+ol ul {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+/* Blockquotes */
+blockquote {
+    border-left: 4px solid var(--accent-primary);
+    padding-left: 1.2em;
+    margin: 1.5em 0;
+    color: var(--text-secondary);
+    font-style: italic;
+    background: var(--bg-secondary);
+    padding: 1em 1em 1em 1.5em;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+th,
+td {
+    padding: 0.8em 1em;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background: var(--bg-code);
+    color: var(--accent-secondary);
+    font-family: "Fira Code", monospace;
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background: rgba(122, 122, 217, 0.05);
+}
+
+/* Horizontal rules */
+hr {
+    border: none;
+    border-top: 2px solid var(--border-color);
+    margin: 2.5em 0;
+}
+
+/* Header info block */
+.header-info {
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--accent-primary);
+    padding: 1.2em;
+    margin: 2em 0;
+    border-radius: 0 6px 6px 0;
+}
+
+.header-info p {
+    margin-bottom: 0.5em;
+}
+
+.header-info p:last-child {
+    margin-bottom: 0;
+}
+
+/* TOC styling */
+nav#TOC {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1.5em;
+    margin: 2em 0;
+}
+
+nav#TOC ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+nav#TOC li {
+    margin-bottom: 0.4em;
+}
+
+nav#TOC>ul>li {
+    margin-bottom: 0.8em;
+    font-weight: 600;
+}
+
+nav#TOC a {
+    color: var(--link-color);
+}
+
+/* Special highlighting */
+.emphasis-box {
+    background: rgba(122, 122, 217, 0.1);
+    border-left: 4px solid var(--accent-primary);
+    padding: 1.2em;
+    margin: 1.5em 0;
+    border-radius: 0 6px 6px 0;
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: white;
+        color: black;
+        max-width: 100%;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: black;
+        page-break-after: avoid;
+    }
+
+    pre,
+    blockquote,
+    table {
+        page-break-inside: avoid;
+    }
+
+    a {
+        color: black;
+        text-decoration: underline;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+        font-size: 15px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    pre {
+        padding: 1em;
+        font-size: 0.8em;
+    }
+}
+
+/* Syntax highlighting for code */
+.sourceCode .kw {
+    color: #e78c8c;
+    font-weight: bold;
+}
+
+/* Keyword */
+.sourceCode .dt {
+    color: #8bcdcd;
+}
+
+/* DataType */
+.sourceCode .dv {
+    color: #d4a76a;
+}
+
+/* DecVal */
+.sourceCode .bn {
+    color: #d4a76a;
+}
+
+/* BaseN */
+.sourceCode .fl {
+    color: #d4a76a;
+}
+
+/* Float */
+.sourceCode .ch {
+    color: #b8bb87;
+}
+
+/* Char */
+.sourceCode .st {
+    color: #b8bb87;
+}
+
+/* String */
+.sourceCode .co {
+    color: #7c7f93;
+    font-style: italic;
+}
+
+/* Comment */
+.sourceCode .ot {
+    color: #a3a7c7;
+}
+
+/* Other */
+.sourceCode .fu {
+    color: #8b8bdb;
+}
+
+/* Function */
+.sourceCode .er {
+    color: #e78c8c;
+    font-weight: bold;
+}
+
+/* Error */
+.sourceCode .wa {
+    color: #e78c8c;
+    font-style: italic;
+}
+
+/* Warning */
+.sourceCode .cn {
+    color: #d4a76a;
+}
+
+/* Constant */
+.sourceCode .sc {
+    color: #b8bb87;
+}
+
+/* SpecialChar */
+.sourceCode .vs {
+    color: #b8bb87;
+}
+
+/* VerbatimString */
+.sourceCode .ss {
+    color: #b8bb87;
+}
+
+/* SpecialString */
+.sourceCode .va {
+    color: #a3a7c7;
+}
+
+/* Variable */
+.sourceCode .cf {
+    color: #e78c8c;
+    font-weight: bold;
+}
+
+/* ControlFlow */
+.sourceCode .op {
+    color: #a3a7c7;
+}
+
+/* Operator */
+.sourceCode .pp {
+    color: #8bcdcd;
+}
+
+/* Preprocessor */
+.sourceCode .at {
+    color: #8b8bdb;
+}
+
+/* Attribute */
+.sourceCode .do {
+    color: #7c7f93;
+    font-style: italic;
+}
+
+/* Documentation */
+.sourceCode .an {
+    color: #7c7f93;
+    font-style: italic;
+}
+
+/* Annotation */
+.sourceCode .cv {
+    color: #7c7f93;
+    font-style: italic;
+}
+
+/* CommentVar */
+.sourceCode .in {
+    color: #7c7f93;
+    font-style: italic;
+}
