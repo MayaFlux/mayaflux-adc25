@@ -1,5 +1,7 @@
 # MayaFlux: Digital-First Multimedia Processing
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/MayaFlux/mayaflux-adc25/blob/main/LICENSE)
+
 ADC25 Virtual Poster Presentation
 
 ## View Online
