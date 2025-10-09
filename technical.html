@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Ranjith Hegde" />
+  <meta name="dcterms.date" content="2025-01-01" />
   <title>MayaFlux Technical Documentation</title>
   <style>
 
@@ -492,148 +494,15 @@ font-style: italic;
 <body>
 <header id="title-block-header">
 <h1 class="title">MayaFlux Technical Documentation</h1>
+<p class="subtitle">ADC25 Virtual Poster Presentation - Technical Deep
+Dive | Independent Developer | Early-Stage Architectural Research</p>
+<p class="author">Ranjith Hegde</p>
+<p class="date">2025</p>
 </header>
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#mayaflux-digital-first-multimedia-processing-architecture" id="toc-mayaflux-digital-first-multimedia-processing-architecture">MayaFlux:
-Digital-First Multimedia Processing Architecture</a>
-<ul>
-<li><a href="#abstract" id="toc-abstract">Abstract</a></li>
-<li><a href="#table-of-contents" id="toc-table-of-contents">Table of
-Contents</a></li>
-<li><a href="#the-digital-first-paradigm" id="toc-the-digital-first-paradigm">The Digital-First Paradigm</a>
-<ul>
-<li><a href="#moving-beyond-analog-metaphors" id="toc-moving-beyond-analog-metaphors">Moving Beyond Analog
-Metaphors</a></li>
-<li><a href="#core-philosophy-data-transformation-as-creative-medium" id="toc-core-philosophy-data-transformation-as-creative-medium">Core
-Philosophy: Data Transformation as Creative Medium</a></li>
-</ul></li>
-<li><a href="#core-architectural-foundations" id="toc-core-architectural-foundations">Core Architectural
-Foundations</a>
-<ul>
-<li><a href="#nodes-unit-by-unit-transformation-precision" id="toc-nodes-unit-by-unit-transformation-precision">1. Nodes:
-Unit-by-Unit Transformation Precision</a></li>
-<li><a href="#buffers-temporal-gathering-spaces" id="toc-buffers-temporal-gathering-spaces">2. Buffers: Temporal
-Gathering Spaces</a></li>
-<li><a href="#coroutines-time-as-compositional-material" id="toc-coroutines-time-as-compositional-material">3. Coroutines: Time
-as Compositional Material</a></li>
-<li><a href="#containers-multi-dimensional-data-architecture" id="toc-containers-multi-dimensional-data-architecture">4. Containers:
-Multi-Dimensional Data Architecture</a></li>
-<li><a href="#compute-matrix-declarative-and-composable-computation-engine" id="toc-compute-matrix-declarative-and-composable-computation-engine">5.
-Compute Matrix: Declarative and composable computation engine</a></li>
-</ul></li>
-<li><a href="#lock-free-processing-architecture" id="toc-lock-free-processing-architecture">Lock-Free Processing
-Architecture</a>
-<ul>
-<li><a href="#the-challenge" id="toc-the-challenge">The
-Challenge</a></li>
-<li><a href="#the-solution-atomic-state-guards" id="toc-the-solution-atomic-state-guards">The Solution: Atomic State
-Guards</a></li>
-</ul></li>
-<li><a href="#coroutine-temporal-coordination" id="toc-coroutine-temporal-coordination">Coroutine Temporal
-Coordination</a>
-<ul>
-<li><a href="#vruta-scheduling-infrastructure" id="toc-vruta-scheduling-infrastructure">Vruta: Scheduling
-Infrastructure</a></li>
-<li><a href="#kriya-creative-temporal-patterns" id="toc-kriya-creative-temporal-patterns">Kriya: Creative Temporal
-Patterns</a></li>
-</ul></li>
-<li><a href="#clock-systems-passive-and-active-temporal-drivers" id="toc-clock-systems-passive-and-active-temporal-drivers">Clock
-Systems: Passive and Active Temporal Drivers</a>
-<ul>
-<li><a href="#sampleclock-passive-temporal-tracking" id="toc-sampleclock-passive-temporal-tracking">SampleClock: Passive
-Temporal Tracking</a></li>
-<li><a href="#frameclock-active-temporal-driver" id="toc-frameclock-active-temporal-driver">FrameClock: Active Temporal
-Driver</a></li>
-<li><a href="#clock-coordination-philosophy" id="toc-clock-coordination-philosophy">Clock Coordination
-Philosophy</a></li>
-</ul></li>
-<li><a href="#computationgrammar-declarative-operation-matching" id="toc-computationgrammar-declarative-operation-matching">ComputationGrammar:
-Declarative Operation Matching</a>
-<ul>
-<li><a href="#the-problem" id="toc-the-problem">The Problem</a></li>
-<li><a href="#the-solution-rule-based-computation" id="toc-the-solution-rule-based-computation">The Solution: Rule-Based
-Computation</a></li>
-<li><a href="#rule-definition-examples" id="toc-rule-definition-examples">Rule Definition Examples</a></li>
-<li><a href="#adaptive-pipeline-construction" id="toc-adaptive-pipeline-construction">Adaptive Pipeline
-Construction</a></li>
-</ul></li>
-<li><a href="#yantra-pipeline-mathematical-and-temporal-transformations" id="toc-yantra-pipeline-mathematical-and-temporal-transformations">Yantra
-Pipeline: Mathematical and Temporal Transformations</a>
-<ul>
-<li><a href="#transformer-hierarchy" id="toc-transformer-hierarchy">Transformer Hierarchy</a></li>
-<li><a href="#mathematical-transformations" id="toc-mathematical-transformations">Mathematical
-Transformations</a></li>
-<li><a href="#temporal-transformations" id="toc-temporal-transformations">Temporal Transformations</a></li>
-<li><a href="#helper-functions-with-c20-ranges" id="toc-helper-functions-with-c20-ranges">Helper Functions with C++20
-Ranges</a></li>
-<li><a href="#declarative-composition" id="toc-declarative-composition">Declarative Composition</a></li>
-</ul></li>
-<li><a href="#nddata-unified-cross-modal-processing" id="toc-nddata-unified-cross-modal-processing">NDData: Unified
-Cross-Modal Processing</a>
-<ul>
-<li><a href="#the-problem-1" id="toc-the-problem-1">The Problem</a></li>
-<li><a href="#the-solution-dimensional-abstraction" id="toc-the-solution-dimensional-abstraction">The Solution: Dimensional
-Abstraction</a></li>
-<li><a href="#data-modality-definitions" id="toc-data-modality-definitions">Data Modality Definitions</a></li>
-<li><a href="#creating-dimensional-data" id="toc-creating-dimensional-data">Creating Dimensional Data</a></li>
-<li><a href="#unified-transformation-interface" id="toc-unified-transformation-interface">Unified Transformation
-Interface</a></li>
-<li><a href="#region-based-access" id="toc-region-based-access">Region-Based Access</a></li>
-<li><a href="#container-integration" id="toc-container-integration">Container Integration</a></li>
-<li><a href="#cross-modal-workflow-example" id="toc-cross-modal-workflow-example">Cross-Modal Workflow
-Example</a></li>
-</ul></li>
-<li><a href="#window-management-as-coroutines" id="toc-window-management-as-coroutines">Window Management as
-Coroutines</a>
-<ul>
-<li><a href="#traditional-windowing-callback-hell" id="toc-traditional-windowing-callback-hell">Traditional Windowing:
-Callback Hell</a></li>
-<li><a href="#mayaflux-approach-window-events-as-eventsource" id="toc-mayaflux-approach-window-events-as-eventsource">MayaFlux
-Approach: Window Events as EventSource</a></li>
-<li><a href="#coroutine-event-patterns" id="toc-coroutine-event-patterns">Coroutine Event Patterns</a></li>
-<li><a href="#eventsource-architecture" id="toc-eventsource-architecture">EventSource Architecture</a></li>
-<li><a href="#window-processing-token" id="toc-window-processing-token">Window Processing Token</a></li>
-</ul></li>
-<li><a href="#domain-composition-and-processing-tokens" id="toc-domain-composition-and-processing-tokens">Domain Composition and
-Processing Tokens</a>
-<ul>
-<li><a href="#the-token-system" id="toc-the-token-system">The Token
-System</a></li>
-<li><a href="#domain-composition" id="toc-domain-composition">Domain
-Composition</a></li>
-<li><a href="#domain-decomposition" id="toc-domain-decomposition">Domain
-Decomposition</a></li>
-<li><a href="#cross-domain-coordination" id="toc-cross-domain-coordination">Cross-Domain Coordination</a></li>
-<li><a href="#processing-handle-access" id="toc-processing-handle-access">Processing Handle Access</a></li>
-</ul></li>
-<li><a href="#current-implementation-status" id="toc-current-implementation-status">Current Implementation Status</a>
-<ul>
-<li><a href="#fully-functional-tested" id="toc-fully-functional-tested">Fully Functional &amp; Tested</a></li>
-<li><a href="#in-active-development" id="toc-in-active-development">In
-Active Development</a></li>
-<li><a href="#planned-expansions" id="toc-planned-expansions">Planned
-Expansions</a></li>
-</ul></li>
-<li><a href="#future-vision-and-expansion" id="toc-future-vision-and-expansion">Future Vision and Expansion</a>
-<ul>
-<li><a href="#the-pluggable-philosophy" id="toc-the-pluggable-philosophy">The Pluggable Philosophy</a></li>
-<li><a href="#beyond-traditional-dsp" id="toc-beyond-traditional-dsp">Beyond Traditional DSP</a></li>
-<li><a href="#research-questions" id="toc-research-questions">Research
-Questions</a></li>
-</ul></li>
-<li><a href="#seeking-adversarial-testing-and-community-validation" id="toc-seeking-adversarial-testing-and-community-validation">Seeking:
-Adversarial Testing and Community Validation</a></li>
-<li><a href="#contact-resources" id="toc-contact-resources">Contact
-&amp; Resources</a></li>
-</ul></li>
-</ul>
-</nav>
-<h1 id="mayaflux-digital-first-multimedia-processing-architecture">MayaFlux:
-Digital-First Multimedia Processing Architecture</h1>
-<p><strong>ADC25 Virtual Poster Presentation - Technical Deep
-Dive</strong></p>
-<p>Independent Developer | Early-Stage Architectural Research</p>
+<p><strong>Copyright © 2025 MayaFlux</strong><br />
+Licensed under the GNU General Public License v3.0<br />
+<a href="https://github.com/MayaFlux/mayaflux-adc25/blob/main/LICENSE">View
+License</a></p>
 <hr />
 <h2 id="abstract">Abstract</h2>
 <p>MayaFlux demonstrates C++20-enabled unified multimedia processing
