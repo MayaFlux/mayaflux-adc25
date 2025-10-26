@@ -7,7 +7,7 @@ ADC25 Virtual Poster Presentation
 ## View Online
 
 - **Poster:** https://MayaFlux.github.io/mayaflux-adc25/
-- **Technical Documentation:** https://MayaFlux.github.io/mayaflux-adc25/technical.html
+- **Technical Documentation:** https://MayaFlux.github.io/mayaflux-adc25/assets/technical.html
 
 ## About
 

@@ -682,32 +682,67 @@ Coordination</h4>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="bu">std::</span>shared_ptr<span class="op">&lt;</span>Node<span class="op">&gt;&gt;</span> <span class="va">m_nodes</span><span class="op">;</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">bool</span> register_node<span class="op">(</span>shared_ptr<span class="op">&lt;</span>Node<span class="op">&gt;</span> node<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Atomic state check - only register when safe</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        ProcessingState expected <span class="op">=</span> ProcessingState<span class="op">::</span>IDLE<span class="op">;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(!</span><span class="va">m_processing_state</span><span class="op">.</span>compare_exchange_strong<span class="op">(</span>expected<span class="op">,</span> ProcessingState<span class="op">::</span>MODIFYING<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span>  <span class="co">// Currently processing, try later</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Safe to modify graph</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">m_nodes</span><span class="op">.</span>push_back<span class="op">(</span>node<span class="op">);</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="va">m_processing_state</span><span class="op">.</span>store<span class="op">(</span>ProcessingState<span class="op">::</span>IDLE<span class="op">);</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> process_sample<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">m_processing_state</span><span class="op">.</span>store<span class="op">(</span>ProcessingState<span class="op">::</span>ACTIVE<span class="op">);</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="dt">double</span> sum <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="kw">auto</span><span class="op">&amp;</span> node <span class="op">:</span> <span class="va">m_nodes</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>node<span class="op">-&gt;</span>is_registered_for_channel<span class="op">(</span>current_channel<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>                sum <span class="op">+=</span> node<span class="op">-&gt;</span>process_sample<span class="op">();</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="va">m_processing_state</span><span class="op">.</span>store<span class="op">(</span>ProcessingState<span class="op">::</span>IDLE<span class="op">);</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> sum<span class="op">;</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span><span class="va">m_is_processing</span><span class="op">.</span>load<span class="op">(</span><span class="bu">std::</span>memory_order_acquire<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span><span class="va">m_Nodes</span><span class="op">.</span>end<span class="op">()</span> <span class="op">!=</span> <span class="bu">std::</span>ranges::find<span class="op">(</span><span class="va">m_Nodes</span><span class="op">,</span> node<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">uint32_t</span> state <span class="op">=</span> node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">.</span>load<span class="op">();</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>state <span class="op">&amp;</span> Utils<span class="op">::</span>NodeState<span class="op">::</span>INACTIVE<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                atomic_remove_flag<span class="op">(</span>node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">,</span> Utils<span class="op">::</span>NodeState<span class="op">::</span>INACTIVE<span class="op">);</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                atomic_add_flag<span class="op">(</span>node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">,</span> Utils<span class="op">::</span>NodeState<span class="op">::</span>ACTIVE<span class="op">);</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="kw">auto</span><span class="op">&amp;</span> <span class="va">m_pending_op</span> <span class="op">:</span> <span class="va">m_pending_ops</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            <span class="dt">bool</span> expected <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span><span class="va">m_pending_op</span><span class="op">.</span>active<span class="op">.</span>compare_exchange_strong<span class="op">(</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                    expected<span class="op">,</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">std::</span>memory_order_acquire<span class="op">,</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">std::</span>memory_order_relaxed<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>                <span class="va">m_pending_op</span><span class="op">.</span>node <span class="op">=</span> node<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>                atomic_remove_flag<span class="op">(</span>node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">,</span> Utils<span class="op">::</span>NodeState<span class="op">::</span>ACTIVE<span class="op">);</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>                atomic_add_flag<span class="op">(</span>node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">,</span> Utils<span class="op">::</span>NodeState<span class="op">::</span>INACTIVE<span class="op">);</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>                <span class="va">m_pending_count</span><span class="op">.</span>fetch_add<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="bu">std::</span>memory_order_relaxed<span class="op">);</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="op">(</span><span class="va">m_is_processing</span><span class="op">.</span>load<span class="op">(</span><span class="bu">std::</span>memory_order_acquire<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>            <span class="va">m_is_processing</span><span class="op">.</span>wait<span class="op">(</span><span class="kw">true</span><span class="op">,</span> <span class="bu">std::</span>memory_order_acquire<span class="op">);</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="va">m_Nodes</span><span class="op">.</span>push_back<span class="op">(</span>node<span class="op">);</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint32_t</span> state <span class="op">=</span> node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">.</span>load<span class="op">();</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    atomic_add_flag<span class="op">(</span>node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">,</span> Utils<span class="op">::</span>NodeState<span class="op">::</span>ACTIVE<span class="op">);</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> process_sample<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(!</span>preprocess<span class="op">())</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fl">0.</span><span class="op">;</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> sample <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="kw">auto</span><span class="op">&amp;</span> node <span class="op">:</span> <span class="va">m_Nodes</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>        <span class="dt">uint32_t</span> state <span class="op">=</span> node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">.</span>load<span class="op">();</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(!(</span>state <span class="op">&amp;</span> Utils<span class="op">::</span>NodeState<span class="op">::</span>PROCESSED<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>            <span class="kw">auto</span> generator <span class="op">=</span> <span class="bu">std::</span>dynamic_pointer_cast<span class="op">&lt;</span>Nodes<span class="op">::</span>Generator<span class="op">::</span>Generator<span class="op">&gt;(</span>node<span class="op">);</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>generator <span class="op">&amp;&amp;</span> generator<span class="op">-&gt;</span>should_mock_process<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>                generator<span class="op">-&gt;</span>process_sample<span class="op">(</span><span class="fl">0.</span><span class="op">);</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>                sample <span class="op">+=</span> node<span class="op">-&gt;</span>process_sample<span class="op">(</span><span class="fl">0.</span><span class="op">);</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>            atomic_add_flag<span class="op">(</span>node<span class="op">-&gt;</span><span class="va">m_state</span><span class="op">,</span> Utils<span class="op">::</span>NodeState<span class="op">::</span>PROCESSED<span class="op">);</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>            sample <span class="op">+=</span> node<span class="op">-&gt;</span>get_last_output<span class="op">();</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>    postprocess<span class="op">();</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sample<span class="op">;</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
 <p><strong>Key insights:</strong></p>
 <ul>
 <li>No locks in audio callback path</li>
@@ -806,31 +841,55 @@ Sequential Composition</h4>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>event_chain<span class="op">.</span>start<span class="op">();</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">// Internally creates coroutine with timed suspension:</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>Task<span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;</span> execute_chain<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">co_await</span> Time<span class="op">(</span><span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>Routine execute_chain<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">co_await</span> SampleDelay<span class="op">(</span>Utils<span class="op">::</span>seconds_to_samples<span class="op">(</span><span class="fl">0.125</span><span class="op">));</span></span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    start_process<span class="op">();</span></span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">co_await</span> Time<span class="op">(</span><span class="fl">0.125</span><span class="op">);</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">co_await</span> BufferDelay<span class="op">(</span><span class="dv">4</span><span class="op">);</span></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    modulate_filter<span class="op">();</span></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">co_await</span> Time<span class="op">(</span><span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">co_await</span> FrameDelay<span class="op">(</span><span class="dv">60</span><span class="op">);</span></span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    trigger_release<span class="op">();</span></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="buffer-capture-mechanisms">Buffer Capture Mechanisms</h4>
-<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> capture <span class="op">=</span> Kriya<span class="op">::</span>BufferCapture<span class="op">{</span>audio_buffer<span class="op">}</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>for_cycle<span class="op">(</span><span class="dv">4</span><span class="op">)</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_window<span class="op">(</span><span class="dv">1024</span><span class="op">,</span> <span class="fl">0.5</span><span class="bu">f</span><span class="op">)</span>  <span class="co">// Windowed analysis</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>as_circular<span class="op">(</span><span class="dv">2048</span><span class="op">);</span>       <span class="co">// Circular buffer mode</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Coroutine coordinates buffer operations temporally:</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>Task<span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;</span> capture_routine<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> cycle <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> cycle <span class="op">&lt;</span> <span class="dv">4</span><span class="op">;</span> <span class="op">++</span>cycle<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">co_await</span> cycle_complete<span class="op">(</span>audio_buffer<span class="op">);</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">auto</span> windowed_data <span class="op">=</span> apply_window<span class="op">(</span>buffer_data<span class="op">,</span> <span class="dv">1024</span><span class="op">,</span> <span class="fl">0.5</span><span class="bu">f</span><span class="op">);</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        process_spectral_analysis<span class="op">(</span>windowed_data<span class="op">);</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> batch_accumulation_pipeline<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> scheduler <span class="op">=</span> MayaFlux<span class="op">::</span>get_scheduler<span class="op">();</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> buffer_manager <span class="op">=</span> scheduler<span class="op">-&gt;</span>get_buffer_manager<span class="op">();</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> pipeline <span class="op">=</span> Kriya<span class="op">::</span>BufferPipeline<span class="op">::</span>create<span class="op">(*</span>scheduler<span class="op">,</span> buffer_manager<span class="op">)</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">-&gt;</span>with_strategy<span class="op">(</span>Kriya<span class="op">::</span>ExecutionStrategy<span class="op">::</span>PHASED<span class="op">);</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>pipeline</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;</span> Kriya<span class="op">::</span>BufferOperation<span class="op">::</span>capture_from<span class="op">(</span>audio_buffer<span class="op">)</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>for_cycles<span class="op">(</span><span class="dv">20</span><span class="op">)</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;</span> Kriya<span class="op">::</span>BufferOperation<span class="op">::</span>transform<span class="op">([](</span>Kakshya<span class="op">::</span>DataVariant<span class="op">&amp;</span> data<span class="op">,</span> <span class="dt">uint32_t</span> cycle<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> <span class="kw">auto</span><span class="op">&amp;</span> accumulated <span class="op">=</span> <span class="bu">std::</span>get<span class="op">&lt;</span><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&gt;(</span>data<span class="op">);</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> process_batch<span class="op">(</span>accumulated<span class="op">);</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">})</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;</span> Kriya<span class="op">::</span>BufferOperation<span class="op">::</span>route_to_container<span class="op">(</span>output_stream<span class="op">);</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    pipeline<span class="op">-&gt;</span>execute_buffer_rate<span class="op">(</span><span class="dv">10</span><span class="op">);</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> streaming_buffer_modification<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> scheduler <span class="op">=</span> MayaFlux<span class="op">::</span>get_scheduler<span class="op">();</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> buffer_manager <span class="op">=</span> scheduler<span class="op">-&gt;</span>get_buffer_manager<span class="op">();</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> pipeline <span class="op">=</span> Kriya<span class="op">::</span>BufferPipeline<span class="op">::</span>create<span class="op">(*</span>scheduler<span class="op">,</span> buffer_manager<span class="op">)</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        <span class="op">-&gt;</span>with_strategy<span class="op">(</span>Kriya<span class="op">::</span>ExecutionStrategy<span class="op">::</span>STREAMING<span class="op">);</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>pipeline</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;</span> Kriya<span class="op">::</span>BufferOperation<span class="op">::</span>capture_from<span class="op">(</span>audio_buffer<span class="op">)</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>for_cycles<span class="op">(</span><span class="dv">1</span><span class="op">)</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;</span> Kriya<span class="op">::</span>BufferOperation<span class="op">::</span>modify_buffer<span class="op">(</span>audio_buffer<span class="op">,</span> <span class="op">[](</span><span class="bu">std::</span>shared_ptr<span class="op">&lt;</span>Buffers<span class="op">::</span>AudioBuffer<span class="op">&gt;</span> buf<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>            <span class="kw">auto</span><span class="op">&amp;</span> samples <span class="op">=</span> buf<span class="op">-&gt;</span>get_data<span class="op">();</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="kw">auto</span><span class="op">&amp;</span> s <span class="op">:</span> samples<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>                s <span class="op">*=</span> <span class="fl">0.9</span><span class="op">;</span>  <span class="co">// Simple gain reduction</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        <span class="op">}).</span>as_streaming<span class="op">();</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>    pipeline<span class="op">-&gt;</span>execute_buffer_rate<span class="op">();</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="timer-operations">Timer Operations</h4>
 <div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// One-shot timer</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Timer timer<span class="op">(*</span>scheduler<span class="op">);</span></span>
@@ -1234,23 +1293,21 @@ regardless of data modality:</p>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Unified data type</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> DataVariant <span class="op">=</span> <span class="bu">std::</span>variant<span class="op">&lt;</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span><span class="op">,</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;,</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&gt;,</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&gt;&gt;,</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>string</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;;</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Dimensional descriptor</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> DataDimension <span class="op">{</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>string name<span class="op">;</span>           <span class="co">// &quot;time&quot;, &quot;frequency&quot;, &quot;x&quot;, &quot;y&quot;, &quot;channel&quot;</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint64_t</span> size<span class="op">;</span>              <span class="co">// Number of elements</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint64_t</span> stride<span class="op">;</span>            <span class="co">// Memory stride</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    DimensionType type<span class="op">;</span>         <span class="co">// TEMPORAL, SPATIAL, SPECTRAL, CHANNEL</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>optional<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> scale<span class="op">;</span> <span class="co">// Physical units conversion</span></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;,</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint32_t</span><span class="op">&gt;,</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span>glm<span class="op">::</span>vec3<span class="op">&gt;</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;;</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Dimensional descriptor</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> DataDimension <span class="op">{</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>string name<span class="op">;</span>           <span class="co">// &quot;time&quot;, &quot;frequency&quot;, &quot;x&quot;, &quot;y&quot;, &quot;channel&quot;</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint64_t</span> size<span class="op">;</span>              <span class="co">// Number of elements</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint64_t</span> stride<span class="op">;</span>            <span class="co">// Memory stride</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    DimensionType type<span class="op">;</span>         <span class="co">// TEMPORAL, SPATIAL, SPECTRAL, CHANNEL</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>optional<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;</span> scale<span class="op">;</span> <span class="co">// Physical units conversion</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3 id="data-modality-definitions">Data Modality Definitions</h3>
 <div class="sourceCode" id="cb24"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> <span class="kw">class</span> DataModality <span class="op">{</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    AUDIO_1D<span class="op">,</span>              <span class="co">// Single channel audio</span></span>
@@ -1428,7 +1485,7 @@ coroutines:</p>
 <h3 id="coroutine-event-patterns">Coroutine Event Patterns</h3>
 <h4 id="awaiting-specific-events">Awaiting Specific Events</h4>
 <div class="sourceCode" id="cb32"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Wait for specific window event</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>Task<span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;</span> handle_user_input<span class="op">(</span>GlfwWindow<span class="op">&amp;</span> window<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>Event handle_user_input<span class="op">(</span>GlfwWindow<span class="op">&amp;</span> window<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="kw">true</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Await next keyboard event</span></span>
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">auto</span> event <span class="op">=</span> <span class="cf">co_await</span> window<span class="op">.</span>event_source<span class="op">().</span>next_event<span class="op">(</span></span>
@@ -1446,7 +1503,7 @@ coroutines:</p>
 <span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="event-sequencing">Event Sequencing</h4>
 <div class="sourceCode" id="cb33"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Wait for event sequence</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>Task<span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;</span> gesture_recognition<span class="op">(</span>GlfwWindow<span class="op">&amp;</span> window<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>Event gesture_recognition<span class="op">(</span>GlfwWindow<span class="op">&amp;</span> window<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Wait for mouse button press</span></span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> press_event <span class="op">=</span> <span class="cf">co_await</span> window<span class="op">.</span>event_source<span class="op">().</span>next_event<span class="op">(</span></span>
 <span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>        WindowEventType<span class="op">::</span>MOUSE_BUTTON_PRESSED</span>
@@ -1475,7 +1532,7 @@ coroutines:</p>
 <h4 id="event-driven-audio-visual-coordination">Event-Driven
 Audio-Visual Coordination</h4>
 <div class="sourceCode" id="cb34"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Coordinate audio triggering with window focus</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>Task<span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;</span> focus_aware_processing<span class="op">(</span>GlfwWindow<span class="op">&amp;</span> window<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>Event focus_aware_processing<span class="op">(</span>GlfwWindow<span class="op">&amp;</span> window<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="kw">true</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">auto</span> event <span class="op">=</span> <span class="cf">co_await</span> window<span class="op">.</span>event_source<span class="op">().</span>next_event<span class="op">();</span></span>
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
@@ -1497,7 +1554,7 @@ Audio-Visual Coordination</h4>
 <span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="multi-window-coordination">Multi-Window Coordination</h4>
 <div class="sourceCode" id="cb35"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Coordinate events across multiple windows</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>Task<span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;</span> multi_window_sync<span class="op">(</span>GlfwWindow<span class="op">&amp;</span> main_window<span class="op">,</span> GlfwWindow<span class="op">&amp;</span> control_window<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>GraphicsRoutine multi_window_sync<span class="op">(</span>GlfwWindow<span class="op">&amp;</span> main_window<span class="op">,</span> GlfwWindow<span class="op">&amp;</span> control_window<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="kw">true</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Wait for events from either window</span></span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">auto</span> event <span class="op">=</span> <span class="cf">co_await</span> EventSource<span class="op">::</span>any_of<span class="op">({</span></span>
@@ -1524,70 +1581,56 @@ Audio-Visual Coordination</h4>
 <span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span><span class="op">:</span></span>
 <span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Signal event from callback</span></span>
 <span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> signal<span class="op">(</span><span class="at">const</span> WindowEvent<span class="op">&amp;</span> event<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">std::</span>lock_guard lock<span class="op">(</span><span class="va">m_mutex</span><span class="op">);</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">m_event_queue</span><span class="op">.</span>push<span class="op">(</span>event<span class="op">);</span></span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Resume all waiting coroutines</span></span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="kw">auto</span><span class="op">&amp;</span> handle <span class="op">:</span> <span class="va">m_waiting_coroutines</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>            handle<span class="op">.</span>resume<span class="op">();</span></span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>        <span class="va">m_waiting_coroutines</span><span class="op">.</span>clear<span class="op">();</span></span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Awaitable for next event</span></span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> next_event<span class="op">(</span><span class="bu">std::</span>optional<span class="op">&lt;</span>WindowEventType<span class="op">&gt;</span> filter <span class="op">=</span> <span class="bu">std::</span>nullopt<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>        <span class="kw">struct</span> EventAwaiter <span class="op">{</span></span>
-<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>            EventSource<span class="op">&amp;</span> source<span class="op">;</span></span>
-<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>            <span class="bu">std::</span>optional<span class="op">&lt;</span>WindowEventType<span class="op">&gt;</span> filter<span class="op">;</span></span>
-<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>            WindowEvent result<span class="op">;</span></span>
-<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>            <span class="dt">bool</span> await_ready<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>                <span class="bu">std::</span>lock_guard lock<span class="op">(</span>source<span class="op">.</span><span class="va">m_mutex</span><span class="op">);</span></span>
-<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="op">(</span>source<span class="op">.</span><span class="va">m_event_queue</span><span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
-<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>                <span class="co">// Check if event matches filter</span></span>
-<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="op">(</span>filter <span class="op">&amp;&amp;</span> source<span class="op">.</span><span class="va">m_event_queue</span><span class="op">.</span>front<span class="op">().</span>type <span class="op">!=</span> <span class="op">*</span>filter<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
-<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>                result <span class="op">=</span> source<span class="op">.</span><span class="va">m_event_queue</span><span class="op">.</span>front<span class="op">();</span></span>
-<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>                source<span class="op">.</span><span class="va">m_event_queue</span><span class="op">.</span>pop<span class="op">();</span></span>
-<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
-<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a>            <span class="dt">void</span> await_suspend<span class="op">(</span><span class="bu">std::</span>coroutine_handle<span class="op">&lt;&gt;</span> handle<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a>                <span class="bu">std::</span>lock_guard lock<span class="op">(</span>source<span class="op">.</span><span class="va">m_mutex</span><span class="op">);</span></span>
-<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a>                source<span class="op">.</span><span class="va">m_waiting_coroutines</span><span class="op">.</span>push_back<span class="op">(</span>handle<span class="op">);</span></span>
-<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a>            WindowEvent await_resume<span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> result<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a>        <span class="op">};</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">m_event_queue</span><span class="op">.</span>push<span class="op">(</span>event<span class="op">);</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Resume all waiting coroutines</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="kw">auto</span><span class="op">&amp;</span> handle <span class="op">:</span> <span class="va">m_waiting_coroutines</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>            handle<span class="op">.</span>resume<span class="op">();</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">m_waiting_coroutines</span><span class="op">.</span>clear<span class="op">();</span></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Awaitable for next event</span></span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> next_event<span class="op">(</span><span class="bu">std::</span>optional<span class="op">&lt;</span>WindowEventType<span class="op">&gt;</span> filter <span class="op">=</span> <span class="bu">std::</span>nullopt<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>        <span class="kw">struct</span> EventAwaiter <span class="op">{</span></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>            EventSource<span class="op">&amp;</span> source<span class="op">;</span></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>            <span class="bu">std::</span>optional<span class="op">&lt;</span>WindowEventType<span class="op">&gt;</span> filter<span class="op">;</span></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>            WindowEvent result<span class="op">;</span></span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>            <span class="dt">bool</span> await_ready<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="op">(</span>source<span class="op">.</span><span class="va">m_event_queue</span><span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>                <span class="co">// Check if event matches filter</span></span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="op">(</span>filter <span class="op">&amp;&amp;</span> source<span class="op">.</span><span class="va">m_event_queue</span><span class="op">.</span>front<span class="op">().</span>type <span class="op">!=</span> <span class="op">*</span>filter<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>                result <span class="op">=</span> source<span class="op">.</span><span class="va">m_event_queue</span><span class="op">.</span>front<span class="op">();</span></span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>                source<span class="op">.</span><span class="va">m_event_queue</span><span class="op">.</span>pop<span class="op">();</span></span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a>            <span class="dt">void</span> await_suspend<span class="op">(</span><span class="bu">std::</span>coroutine_handle<span class="op">&lt;&gt;</span> handle<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a>                source<span class="op">.</span><span class="va">m_waiting_coroutines</span><span class="op">.</span>push_back<span class="op">(</span>handle<span class="op">);</span></span>
+<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a>            WindowEvent await_resume<span class="op">()</span> <span class="op">{</span> <span class="cf">return</span> result<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a>        <span class="op">};</span></span>
+<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> EventAwaiter<span class="op">{*</span><span class="kw">this</span><span class="op">,</span> filter<span class="op">};</span></span>
+<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
 <span id="cb36-52"><a href="#cb36-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-53"><a href="#cb36-53" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> EventAwaiter<span class="op">{*</span><span class="kw">this</span><span class="op">,</span> filter<span class="op">};</span></span>
-<span id="cb36-54"><a href="#cb36-54" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb36-55"><a href="#cb36-55" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb36-56"><a href="#cb36-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-57"><a href="#cb36-57" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb36-53"><a href="#cb36-53" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3 id="window-processing-token">Window Processing Token</h3>
 <p>Windows have their own processing token for domain coordination:</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Domain definition for windowing</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>Domain<span class="op">::</span>WINDOWING <span class="op">=</span></span>
+<div class="sourceCode" id="cb37"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Domain definition for windowing, same as graphics</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>Domain<span class="op">::</span>GRAPHICS <span class="op">=</span></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">(</span>Nodes<span class="op">::</span>ProcessingToken<span class="op">::</span>VISUAL_RATE <span class="op">&lt;&lt;</span> <span class="dv">32</span><span class="op">)</span> <span class="op">|</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">(</span>Buffers<span class="op">::</span>ProcessingToken<span class="op">::</span>WINDOW_EVENTS <span class="op">&lt;&lt;</span> <span class="dv">16</span><span class="op">)</span> <span class="op">|</span></span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">(</span>Vruta<span class="op">::</span>ProcessingToken<span class="op">::</span>FRAME_ACCURATE<span class="op">);</span></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Window event buffer processes at frame rate</span></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> window_buffer <span class="op">=</span> BufferManager<span class="op">::</span>create_buffer<span class="op">(</span></span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>    BufferType<span class="op">::</span>WINDOW_EVENT<span class="op">,</span></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    Domain<span class="op">::</span>WINDOWING</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="op">);</span></span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Coordinate window events with visual nodes</span></span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> window_node <span class="op">=</span> vega<span class="op">.</span>window_events<span class="op">()</span> <span class="op">|</span> Domain<span class="op">::</span>WINDOWING<span class="op">;</span></span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>window_node <span class="op">&gt;&gt;</span> visual_buffer <span class="op">&gt;&gt;</span> renderer<span class="op">;</span></span></code></pre></div>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">(</span>Buffers<span class="op">::</span>ProcessingToken<span class="op">::</span>GRAPHICS_BACKEND <span class="op">&lt;&lt;</span> <span class="dv">16</span><span class="op">)</span> <span class="op">|</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">(</span>Vruta<span class="op">::</span>ProcessingToken<span class="op">::</span>EVENT<span class="op">);</span></span></code></pre></div>
 <p>This architecture transforms window management from <strong>callback
 spaghetti</strong> into <strong>expressive temporal
 coordination</strong>, enabling patterns like gesture recognition,
@@ -1662,7 +1705,7 @@ processing characteristics:</p>
 <span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Windowing without rendering</span></span>
 <span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>    WINDOWING <span class="op">=</span> <span class="op">(</span>Nodes<span class="op">::</span>ProcessingToken<span class="op">::</span>VISUAL_RATE <span class="op">&lt;&lt;</span> <span class="dv">32</span><span class="op">)</span> <span class="op">|</span></span>
-<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>                <span class="op">(</span>Buffers<span class="op">::</span>ProcessingToken<span class="op">::</span>WINDOW_EVENTS <span class="op">&lt;&lt;</span> <span class="dv">16</span><span class="op">)</span> <span class="op">|</span></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>                <span class="op">(</span>Buffers<span class="op">::</span>ProcessingToken<span class="op">::</span>EVENTS <span class="op">&lt;&lt;</span> <span class="dv">16</span><span class="op">)</span> <span class="op">|</span></span>
 <span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>                <span class="op">(</span>Vruta<span class="op">::</span>ProcessingToken<span class="op">::</span>FRAME_ACCURATE<span class="op">),</span></span>
 <span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Input event processing</span></span>
