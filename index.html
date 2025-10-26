@@ -180,9 +180,14 @@
           <p>
             The framework presently includes lock-free node graphs, coroutine
             schedulers, a complete audio backend (RtAudio), region-based data
-            containers, and over 700 component tests. Ongoing development
-            extends to Vulkan integration, live-coding interfaces, and grammar
-            stress testing. The system is already capable of sample-accurate
+            containers, and over 700 component tests. A fully-functional
+            <span class="emphasis"
+              >LLVM21-backed live coding environment (Lila)</span
+            >
+            enables C++20 code compilation and execution within a single buffer
+            cycle. Ongoing development extends to Vulkan integration, grammar
+            stress testing, and embedding (Lua via sol2, WASM, Java FFI
+            planned). The system is already capable of sample-accurate
             cross-modal processing on CPU, with GPU pipelines in active
             development.
           </p>
@@ -241,12 +246,19 @@
             MayaFlux asks whether modern C++ can support a
             <em>truly digital</em> model of multimedia computation—one that no
             longer imitates hardware but composes time, data, and transformation
-            as primary creative material. It positions
+            as primary creative material. The live coding environment validates
+            this paradigm by enabling real-time algorithmic composition—not
+            module patching but recursive coroutine authorship within buffer
+            cycles.
+          </p>
+          <p>
             <span class="emphasis"
-              >computation itself as the site of artistic authorship</span
-            >. The work seeks community validation through adversarial testing
-            and comparative experimentation against existing audio-visual
-            frameworks.
+              >Treating computation as primary creative material</span
+            >
+            requires that code itself become malleable. MayaFlux demonstrates
+            this through sub-buffer JIT latency and coroutine-driven temporal
+            coordination. The work seeks community validation through live
+            experimentation and adversarial testing.
           </p>
         </div>
       </div>
@@ -261,9 +273,10 @@
       <span class="emphasis">MayaFlux eliminates this trade-off.</span>
       Sample-accurate audio coordinates directly with GPU compute shaders.
       Recursive algorithms operate across modalities. Grammar-defined pipelines
-      adapt to data characteristics at runtime. These patterns remain
-      inexpressible when time is callback-driven and domains are architecturally
-      isolated.
+      adapt to data characteristics at runtime. The live coding environment
+      proves these patterns are inexpressible when code is static and domains
+      are architecturally isolated—but achievable when composition becomes
+      computational discourse itself.
     </div>
 
     <footer>
