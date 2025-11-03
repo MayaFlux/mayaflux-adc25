@@ -1,320 +1,379 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MayaFlux: Digital-First Multimedia Processing</title>
-    <!-- Fira Code CDN -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css" />
     <style>
-      body {
-        font-family: "Georgia", "Times New Roman", serif;
-        background-color: #181a20;
-        color: #e2e4ea;
-        line-height: 1.6;
-        max-width: 1100px;
-        margin: 40px auto;
-        padding: 0 20px;
-      }
+        body {
+            font-family: "Georgia", "Times New Roman", serif;
+            background-color: #181a20;
+            color: #e2e4ea;
+            line-height: 1.6;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
 
-      h1,
-      h2,
-      h3 {
-        font-family:
-          "Fira Code", "JetBrains Mono", "Consolas", "Menlo", "Monaco",
-          monospace;
-        font-weight: 600;
-        color: #e7e9f3;
-        letter-spacing: 0.5px;
-      }
+        h1,
+        h2,
+        h3 {
+            font-family: "Fira Code", "JetBrains Mono", monospace;
+            font-weight: 600;
+            color: #e7e9f3;
+            letter-spacing: 0.5px;
+        }
 
-      h1 {
-        font-size: 2.2em;
-        margin-bottom: 0.2em;
-        text-align: center;
-        color: #b7c4ff;
-      }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.2em;
+            text-align: center;
+            color: #b7c4ff;
+        }
 
-      h2 {
-        color: #b7c4ff;
-      }
+        h2 {
+            color: #b7c4ff;
+            font-size: 1.15em;
+        }
 
-      .subtitle {
-        font-style: italic;
-        color: #a3a7c7;
-        margin-bottom: 2em;
-        text-align: center;
-        font-family: "Georgia", "Times New Roman", serif;
-      }
+        .subtitle {
+            font-style: italic;
+            color: #a3a7c7;
+            margin-bottom: 2em;
+            text-align: center;
+            font-family: "Georgia", serif;
+        }
 
-      .twopane {
-        display: flex;
-        gap: 32px;
-        margin-bottom: 2em;
-      }
+        .problem-statement {
+            background: rgba(122, 122, 217, 0.08);
+            border-left: 4px solid #7a7ad9;
+            padding: 1.2em;
+            margin-bottom: 2em;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
 
-      .pane {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5em;
-      }
-
-      .section-box {
-        background: #23253a;
-        border: 1px solid #2e3147;
-        border-radius: 8px;
-        padding: 1.1em 1em;
-        margin-bottom: 0;
-        box-shadow: 0 2px 8px rgba(60, 70, 120, 0.07);
-      }
-
-      .edge-box {
-        background: #23253a;
-        border-left: 4px solid #7a7ad9;
-        padding: 1.2em 1em;
-        margin: 2em 0 2em 0;
-        font-size: 1.08em;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(122, 122, 217, 0.07);
-      }
-
-      .edge-title {
-        font-weight: bold;
-        color: #b7c4ff;
-        margin-bottom: 0.5em;
-        display: block;
-        font-family: "Fira Code", "JetBrains Mono", monospace;
-      }
-
-      .emphasis {
-        color: #7a7ad9;
-        font-weight: bold;
-        font-family: "Fira Code", "JetBrains Mono", monospace;
-      }
-
-      ul {
-        list-style-type: square;
-        margin-left: 1.2em;
-      }
-
-      ul li {
-        color: #e2e4ea;
-      }
-
-      footer {
-        border-top: 1px solid #2e3147;
-        margin-top: 2.5em;
-        padding-top: 1em;
-        font-size: 0.9em;
-        color: #a3a7c7;
-        text-align: center;
-        font-family: "Georgia", "Times New Roman", serif;
-      }
-
-      @media (max-width: 900px) {
         .twopane {
-          flex-direction: column;
-          gap: 0;
+            display: flex;
+            gap: 32px;
+            margin-bottom: 2em;
         }
 
         .pane {
-          gap: 1em;
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5em;
         }
-      }
-    </style>
-  </head>
 
-  <body>
+        .section-box {
+            background: #23253a;
+            border: 1px solid #2e3147;
+            border-radius: 8px;
+            padding: 1.1em 1em;
+            margin-bottom: 0;
+            box-shadow: 0 2px 8px rgba(60, 70, 120, 0.07);
+        }
+
+        .section-box h3 {
+            margin-top: 0;
+            margin-bottom: 0.6em;
+            font-size: 1em;
+        }
+
+        .edge-box {
+            background: #23253a;
+            border-left: 4px solid #7a7ad9;
+            padding: 1.2em 1em;
+            margin: 2em 0;
+            font-size: 0.95em;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(122, 122, 217, 0.07);
+        }
+
+        .edge-title {
+            font-weight: bold;
+            color: #b7c4ff;
+            margin-bottom: 0.5em;
+            display: block;
+            font-family: "Fira Code", monospace;
+        }
+
+        .emphasis {
+            color: #7a7ad9;
+            font-weight: bold;
+        }
+
+        .tech-detail {
+            color: #a3a7c7;
+            font-size: 0.9em;
+            margin-top: 0.4em;
+        }
+
+        ul {
+            list-style-type: square;
+            margin-left: 1.2em;
+            margin-top: 0.5em;
+        }
+
+        ul li {
+            color: #e2e4ea;
+            margin-bottom: 0.4em;
+        }
+
+        .capability {
+            margin-bottom: 1em;
+        }
+
+        .capability-title {
+            font-weight: bold;
+            color: #b7c4ff;
+        }
+
+        .status-box {
+            background: #1a1d2a;
+            border: 1px solid #2e3147;
+            padding: 0.8em;
+            margin-top: 1em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .status-item {
+            margin-bottom: 0.5em;
+        }
+
+        .status-check {
+            color: #7a7ad9;
+            font-weight: bold;
+        }
+
+        footer {
+            border-top: 1px solid #2e3147;
+            margin-top: 2.5em;
+            padding-top: 1em;
+            font-size: 0.9em;
+            color: #a3a7c7;
+            text-align: center;
+            font-family: "Georgia", serif;
+        }
+
+        @media (max-width: 900px) {
+            .twopane {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .pane {
+                gap: 1em;
+            }
+        }
+    </style>
+</head>
+
+<body>
     <h1>MayaFlux</h1>
     <div class="subtitle">
-      Digital-First Multimedia Processing Architecture – ADC25 Poster Summary
+        Unified Multimedia DSP: Moving Beyond Audio-Centric Thinking
+    </div>
+
+    <div class="problem-statement">
+        <strong>The Problem:</strong> Every creative coding framework asks you to
+        choose—real-time audio precision <em>or</em> flexible visual programming,
+        never both with unified timing. Audio tools ignore graphics. Graphics
+        frameworks sacrifice audio accuracy. MayaFlux eliminates this false
+        choice.
     </div>
 
     <div class="twopane">
-      <div class="pane">
-        <div class="section-box">
-          <p>
-            <strong>MayaFlux</strong> proposes a unified model for digital media
-            computation built in modern C++20. It treats all media streams as
-            numerical transformations within a single composable architecture.
-            The system demonstrates how <em>digital processes</em>, rather than
-            analog metaphors, can become the foundation for creative practice.
-          </p>
+        <div class="pane">
+            <div class="section-box">
+                <h2>What Becomes Possible</h2>
+                <p>
+                    When audio, graphics, and control data share a single computational
+                    substrate:
+                </p>
+                <ul>
+                    <li>
+                        <span class="capability-title">Direct cross-modal flow:</span>
+                        Audio features feed GPU compute shaders without translation
+                        layers.
+                    </li>
+                    <li>
+                        <span class="capability-title">Live algorithmic authorship:</span>
+                        Modify audio and visual algorithms while they process, sub-buffer
+                        latency.
+                    </li>
+                    <li>
+                        <span class="capability-title">Recursive composition:</span> Treat
+                        time as creative material via C++20 coroutines—impossible in
+                        traditional DSP.
+                    </li>
+                    <li>
+                        <span class="capability-title">Sample-accurate coordination:</span>
+                        Audio ticks at sample rate, graphics at frame rate, both within
+                        unified scheduling. 100% lock free synchronization.
+                    </li>
+                    <li>
+                        <span class="capability-title">Adaptive pipelines:</span>
+                        Algorithms self-configure based on data characteristics at
+                        runtime.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section-box">
+                <h3>Architecture: Not Feature Lists, But Principles</h3>
+                <p>Four composable paradigms replace analog-inspired thinking:</p>
+                <ul>
+                    <li>
+                        <span class="emphasis">Nodes</span>—Unit-by-unit transformation
+                        precision, maintaining mathematical relationships as creative
+                        decisions.
+                    </li>
+                    <li>
+                        <span class="emphasis">Buffers</span>—Temporal gathering spaces
+                        that accumulate data without blocking allocation.
+                    </li>
+                    <li>
+                        <span class="emphasis">Coroutines</span>—Time itself becomes
+                        malleable through C++20 suspension and resumption primitives.
+                    </li>
+                    <li>
+                        <span class="emphasis">Containers</span>—Multi-dimensional data
+                        unifying audio, graphics, and tensor representations.
+                    </li>
+                    <li>
+                        <span class="emphasis">Compute Matrix</span>—Composable and
+                        expresssive semantic pipelines to analyze, sort, extract and
+                        transform NDData .
+                    </li>
+                </ul>
+                <p class="tech-detail">
+                    All components remain composable and concurrent. Processing domains
+                    are encoded via bit-field tokens, enabling type-safe cross-modal
+                    coordination.
+                </p>
+            </div>
         </div>
-        <div class="section-box">
-          <h2>Core Idea</h2>
-          <p>
-            Instead of viewing audio, video, and control data as separate
-            domains, MayaFlux defines them as
-            <span class="emphasis">interchangeable dimensions</span> of
-            computation. Every signal—temporal, spatial, or spectral—occupies
-            the same numerical field. This allows cross-modal interaction
-            without translation layers or clock mismatches: sound may drive
-            image transformations as directly as arithmetic operations.
-            <span class="emphasis"
-              >Every component—nodes, buffers, schedulers, backends—remains
-              composable</span
-            >
-            while maintaining concurrent operation.
-          </p>
+
+        <div class="pane">
+            <div class="section-box">
+                <h3>Current Implementation Status</h3>
+
+                <div class="status-box">
+                    <div class="status-item">
+                        <span class="status-check">✓ Production-Ready:</span> Live C++20
+                        JIT compilation (Lila, LLVM21), lock-free audio node graphs
+                        (sample-accurate), comprehensive testing (700+ tests), 100,000+
+                        lines of infrastructure.
+                    </div>
+                    <div class="status-item">
+                        <span class="status-check">✓ Proof-of-Concept:</span> Vulkan
+                        graphics pipeline (CPU → GPU unified data flow), cross-domain
+                        synchronization, NDData containers feeding GPU rendering.
+                    </div>
+                    <div class="status-item">
+                        <span class="status-check">→ In Development:</span> GPU compute
+                        shader integration, complex visual pipelines, full audio-visual
+                        feedback loops, advanced scheduling.
+                    </div>
+                </div>
+
+                <p class="tech-detail" style="margin-top: 1em">
+                    The system already demonstrates the paradigm at audio scale.
+                    Graphics POC validates that the architecture scales across domains.
+                </p>
+            </div>
+
+            <div class="section-box">
+                <h3>Why This Matters</h3>
+                <p>
+                    Existing tools inherited assumptions from analog hardware: separate
+                    clocks, translation layers between domains, UI-first rather than
+                    computation-first.
+                </p>
+                <p>
+                    <span class="emphasis">MayaFlux asks: What if we started digital?</span>
+                    Not simulating hardware, but embracing computational possibilities
+                    that only exist in the digital realm—recursion, data-driven
+                    pipelines, real-time code modification, unified cross-modal
+                    processing.
+                </p>
+                <p class="tech-detail">
+                    This isn't iteration on existing paradigms. It's a different
+                    computational substrate.
+                </p>
+            </div>
+
+            <div class="section-box">
+                <h3>For Researchers & Developers</h3>
+                <p>If you're interested in:</p>
+                <ul style="margin-bottom: 0">
+                    <li>
+                        How to actually implement real-time DSP without sacrificing
+                        flexibility
+                    </li>
+                    <li>Why coroutines enable new compositional paradigms</li>
+                    <li>
+                        What happens when you treat GPU and CPU as unified processing
+                    </li>
+                    <li>
+                        Building production infrastructure for algorithmic composition
+                    </li>
+                </ul>
+                <p style="margin-top: 0.8em; font-style: italic; color: #a3a7c7">
+                    This is the reference implementation. Everything is open source.
+                </p>
+            </div>
         </div>
-        <div class="section-box">
-          <h2>Grammar-Driven Computation</h2>
-          <p>
-            The <strong>ComputationGrammar</strong> framework introduces
-            rule-based matching for operations. Instead of selecting algorithms
-            manually, transformations are declared in terms of
-            <span class="emphasis">data characteristics and context</span>.
-            Pipelines construct themselves adaptively, producing
-            context-sensitive computation that remains fully deterministic yet
-            adaptive.
-          </p>
-        </div>
-        <div class="section-box">
-          <h2>Current Implementation</h2>
-          <p>
-            The framework presently includes lock-free node graphs, coroutine
-            schedulers, a complete audio backend (RtAudio), region-based data
-            containers, and over 700 component tests. A fully-functional
-            <span class="emphasis"
-              >LLVM21-backed live coding environment (Lila)</span
-            >
-            enables C++20 code compilation and execution within a single buffer
-            cycle. Ongoing development extends to Vulkan integration, grammar
-            stress testing, and embedding (Lua via sol2, WASM, Java FFI
-            planned). The system is already capable of sample-accurate
-            cross-modal processing on CPU, with GPU pipelines in active
-            development.
-          </p>
-        </div>
-      </div>
-      <div class="pane">
-        <div class="section-box">
-          <h2>Architectural Principles</h2>
-          <ul>
-            <li>
-              <strong>Nodes:</strong> Sample-accurate, lock-free transformation
-              units. Mathematical relationships form creative structure.
-            </li>
-            <li>
-              <strong>Buffers:</strong> Temporal collectors that gather,
-              release, and await data without allocation or blocking.
-            </li>
-            <li>
-              <strong>Coroutines:</strong> C++20 primitives that turn time into
-              compositional material through suspension and resumption.
-            </li>
-            <li>
-              <strong>Containers (NDData):</strong> Multi-dimensional data
-              abstractions unifying audio, video, and tensor forms.
-            </li>
-            <li>
-              <strong>Compute Matrix:</strong> Declarative operation
-              pipelines—mathematical, temporal, spectral analysis, extractors,
-              transforms—that compose and chain across data modalities.
-            </li>
-          </ul>
-          <p>
-            Together these systems establish
-            <span class="emphasis">complete architectural composability</span>:
-            nodes, buffers, and coroutines operate concurrently yet remain
-            substitutable at any level. Processing domains are defined by
-            <em>bit-field tokens</em> that describe rate, backend, and temporal
-            behavior, enabling type-safe cross-domain coordination.
-          </p>
-        </div>
-        <div class="section-box">
-          <h2>Temporal Coordination</h2>
-          <p>
-            Audio and visual domains are synchronized through dual clock
-            systems: the
-            <em>SampleClock</em> (passive, callback-driven) and the
-            <em>FrameClock</em> (active, self-timed). Coroutines subscribe to
-            these clocks, achieving sample- or frame-level precision without
-            external synchronization threads. This allows truly unified
-            real-time behaviour across sound, image, and interaction.
-          </p>
-        </div>
-        <div class="section-box">
-          <h2>Research Context</h2>
-          <p>
-            MayaFlux asks whether modern C++ can support a
-            <em>truly digital</em> model of multimedia computation—one that no
-            longer imitates hardware but composes time, data, and transformation
-            as primary creative material. The live coding environment validates
-            this paradigm by enabling real-time algorithmic composition—not
-            module patching but recursive coroutine authorship within buffer
-            cycles.
-          </p>
-          <p>
-            <span class="emphasis"
-              >Treating computation as primary creative material</span
-            >
-            requires that code itself become malleable. MayaFlux demonstrates
-            this through sub-buffer JIT latency and coroutine-driven temporal
-            coordination. The work seeks community validation through live
-            experimentation and adversarial testing.
-          </p>
-        </div>
-      </div>
     </div>
 
     <div class="edge-box">
-      <span class="edge-title">The Digital-First Paradigm</span>
-      Existing creative coding frameworks choose between real-time audio
-      processing
-      <em>or</em> flexible visual control—never both with shared temporal
-      precision.
-      <span class="emphasis">MayaFlux eliminates this trade-off.</span>
-      Sample-accurate audio coordinates directly with GPU compute shaders.
-      Recursive algorithms operate across modalities. Grammar-defined pipelines
-      adapt to data characteristics at runtime. The live coding environment
-      proves these patterns are inexpressible when code is static and domains
-      are architecturally isolated—but achievable when composition becomes
-      computational discourse itself.
+        <span class="edge-title">The Paradigm Shift in One Sentence</span>
+        Instead of asking "how do I optimize this for audio?" or "how do I make
+        graphics precise?", MayaFlux asks: "What if audio, graphics, and
+        algorithmic composition were just different modalities of the same
+        computational material?"
     </div>
 
     <footer>
-      Independent Developer · ADC25 Virtual Presentation · 2025<br />
-      <a href="assets/technical.html">Technical Documentation</a> · Contact
-      available upon request<br />
-      <span style="font-size: 0.85em; color: #7c7f93">
-        Licensed under
-        <a
-          href="https://github.com/MayaFlux/mayaflux-adc25/blob/main/LICENSE"
-          style="color: #7c7f93"
-          >GPL-3.0</a
-        >
-      </span>
+        Independent Developer · ADC25 Virtual Poster · 2025<br />
+        <strong>GitHub:</strong> Open source, launching November 2025<br />
+        <a href="mailto:mayafluxcollective@proton.me"><strong>Contact:</strong></a>
+        Research collaborations + industry partnerships welcome<br />
+        <a href="assets/technical.html">Technical Documentation</a>
+        <span style="font-size: 0.85em; color: #7c7f93">
+            Licensed under GPL-3.0
+        </span>
     </footer>
-  </body>
-  <style>
+</body>
+<style>
     .tech-doc-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #7a7ad9;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-family: "Fira Code", monospace;
-      font-size: 0.9em;
-      box-shadow: 0 4px 12px rgba(122, 122, 217, 0.3);
-      transition: all 0.3s;
-      z-index: 1000;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #7a7ad9;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-family: "Fira Code", monospace;
+        font-size: 0.9em;
+        box-shadow: 0 4px 12px rgba(122, 122, 217, 0.3);
+        transition: all 0.3s;
+        z-index: 1000;
     }
 
     .tech-doc-btn:hover {
-      background: #b7c4ff;
-      color: #1a1c24;
-      transform: translateY(-2px);
+        background: #b7c4ff;
+        color: #1a1c24;
+        transform: translateY(-2px);
     }
-  </style>
-  <a href="assets/technical.html" class="tech-doc-btn">📄 Technical Docs</a>
+</style>
+<a href="assets/technical.html" class="tech-doc-btn">📄 Technical Docs</a>
+
 </html>
