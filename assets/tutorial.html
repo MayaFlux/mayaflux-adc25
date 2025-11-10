@@ -493,7 +493,6 @@ font-style: italic;
 <header id="title-block-header">
 <h1 class="title">MayaFlux Tutorial: Sculpting Data, Part I</h1>
 </header>
-<h1 id="tutorial-sculpting-data">Tutorial: Sculpting Data</h1>
 <p>In MayaFlux, data isn’t something you use -&gt; it’s something you
 shape. Sound, light, numbers, all share the same substrate. You don’t
 generate a waveform; you sculpt a pattern of information and let it
@@ -504,21 +503,128 @@ point is not playback. The point is agency over time.</p>
 itself — the goal is to understand the movement of information.</p>
 <p>Each section in this series introduces one idea: - A way of
 structuring data - A way of scheduling time - A way of controlling how
-information flows</p>
+information flows.</p>
 <p>Together, they form the foundation of digital composition — not in
 the musical sense, but in the computational one.</p>
 <p>What you’ll do here: - Load data and inspect its structure - Connect
 it to buffers and observe flow - Insert processors and shape
-transformations - Learn how timing and cycles define motion</p>
+transformations - Learn how timing and cycles define motion.</p>
 <p>Eventually, build declarative pipelines that describe complete
-computational events</p>
+computational events.</p>
 <p>What you won’t do here: - Build UIs or “patches” - Work through
-effects lists or presets - Simulate analog workflows</p>
+effects lists or presets - Simulate analog workflows.</p>
 <p>Everything here is real code: The same logic that runs inside the
 MayaFlux engine. You’ll read it, modify it, and run it directly.</p>
 <p>Each step is designed to teach you how the system thinks, so that
 later, when you invent something new, you can do so fluently without
 waiting for someone else to provide the building blocks.</p>
+<ul>
+<li><a href="#tutorial-sculpting-data" id="toc-tutorial-sculpting-data">Tutorial: Sculpting Data</a>
+<ul>
+<li><a href="#the-simplest-first-step" id="toc-the-simplest-first-step">The Simplest First Step</a></li>
+<li><a href="#expansion-1-what-is-a-container" id="toc-expansion-1-what-is-a-container">Expansion 1: What Is a
+Container?</a></li>
+<li><a href="#expansion-2-memory-ownership-and-smart-pointers" id="toc-expansion-2-memory-ownership-and-smart-pointers">Expansion 2:
+Memory, Ownership, and Smart Pointers</a></li>
+<li><a href="#expansion-3-what-is-vega" id="toc-expansion-3-what-is-vega">Expansion 3: What is
+<code>vega</code>?</a></li>
+<li><a href="#expansion-4-the-containers-processor" id="toc-expansion-4-the-containers-processor">Expansion 4: The
+Container’s Processor</a></li>
+<li><a href="#expansion-5-what-.read-does-not-do" id="toc-expansion-5-what-.read-does-not-do">Expansion 5: What
+<code>.read()</code> Does NOT Do</a></li>
+</ul></li>
+<li><a href="#tutorial-connect-to-buffers" id="toc-tutorial-connect-to-buffers">Tutorial: Connect to Buffers</a>
+<ul>
+<li><a href="#the-next-step" id="toc-the-next-step">The Next
+Step</a></li>
+<li><a href="#expansion-1-what-are-buffers" id="toc-expansion-1-what-are-buffers">Expansion 1: What Are
+Buffers?</a></li>
+<li><a href="#expansion-2-why-per-channel-buffers" id="toc-expansion-2-why-per-channel-buffers">Expansion 2: Why
+Per-Channel Buffers?</a></li>
+<li><a href="#expansion-3-the-buffer-manager-and-buffer-lifecycle" id="toc-expansion-3-the-buffer-manager-and-buffer-lifecycle">Expansion
+3: The Buffer Manager and Buffer Lifecycle</a></li>
+<li><a href="#expansion-4-containerbufferthe-bridge" id="toc-expansion-4-containerbufferthe-bridge">Expansion 4:
+ContainerBuffer—The Bridge</a></li>
+<li><a href="#expansion-5-processing-tokenaudio_backend" id="toc-expansion-5-processing-tokenaudio_backend">Expansion 5:
+Processing Token—AUDIO_BACKEND</a></li>
+<li><a href="#expansion-6-accessing-the-buffers" id="toc-expansion-6-accessing-the-buffers">Expansion 6: Accessing the
+Buffers</a></li>
+<li><a href="#the-fluent-vs.-explicit-comparison" id="toc-the-fluent-vs.-explicit-comparison">The Fluent vs. Explicit
+Comparison</a>
+<ul>
+<li><a href="#fluent-what-happens-behind-the-scenes" id="toc-fluent-what-happens-behind-the-scenes">Fluent (What happens
+behind the scenes)</a></li>
+<li><a href="#explicit-whats-actually-happening" id="toc-explicit-whats-actually-happening">Explicit (What’s actually
+happening)</a></li>
+</ul></li>
+<li><a href="#try-it" id="toc-try-it">Try It</a></li>
+</ul></li>
+<li><a href="#tutorial-buffers-own-chains" id="toc-tutorial-buffers-own-chains">Tutorial: Buffers Own Chains</a>
+<ul>
+<li><a href="#the-simplest-path" id="toc-the-simplest-path">The Simplest
+Path</a></li>
+<li><a href="#expansion-1-what-is-vega.iir" id="toc-expansion-1-what-is-vega.iir">Expansion 1: What Is
+<code>vega.IIR()</code>?</a></li>
+<li><a href="#expansion-2-what-is-mayafluxcreate_processor" id="toc-expansion-2-what-is-mayafluxcreate_processor">Expansion 2: What
+Is <code>MayaFlux::create_processor()</code>?</a></li>
+<li><a href="#expansion-3-what-is-a-processing-chain" id="toc-expansion-3-what-is-a-processing-chain">Expansion 3: What Is a
+Processing Chain?</a></li>
+<li><a href="#expansion-4-adding-processor-to-another-channel-optional" id="toc-expansion-4-adding-processor-to-another-channel-optional">Expansion
+4: Adding Processor to Another Channel (Optional)</a></li>
+<li><a href="#expansion-5-what-happens-inside" id="toc-expansion-5-what-happens-inside">Expansion 5: What Happens
+Inside</a></li>
+<li><a href="#expansion-6-processors-are-reusable-building-blocks" id="toc-expansion-6-processors-are-reusable-building-blocks">Expansion
+6: Processors Are Reusable Building Blocks</a></li>
+<li><a href="#try-it-1" id="toc-try-it-1">Try It</a></li>
+</ul></li>
+<li><a href="#tutorial-timing-streams-and-bridges" id="toc-tutorial-timing-streams-and-bridges">Tutorial: Timing, Streams,
+and Bridges</a>
+<ul>
+<li><a href="#the-current-continous-flow" id="toc-the-current-continous-flow">The Current Continous Flow</a></li>
+<li><a href="#where-were-going" id="toc-where-were-going">Where We’re
+Going</a></li>
+<li><a href="#expansion-1-the-architecture-of-containers" id="toc-expansion-1-the-architecture-of-containers">Expansion 1: The
+Architecture of Containers</a></li>
+<li><a href="#expansion-2-enter-dynamicsoundstream" id="toc-expansion-2-enter-dynamicsoundstream">Expansion 2: Enter
+DynamicSoundStream</a></li>
+<li><a href="#expansion-3-streamwriteprocessor" id="toc-expansion-3-streamwriteprocessor">Expansion 3:
+StreamWriteProcessor</a></li>
+<li><a href="#expansion-4-filebridgebuffercontrolled-flow" id="toc-expansion-4-filebridgebuffercontrolled-flow">Expansion 4:
+FileBridgeBuffer—Controlled Flow</a></li>
+<li><a href="#expansion-5-why-this-architecture" id="toc-expansion-5-why-this-architecture">Expansion 5: Why This
+Architecture?</a></li>
+<li><a href="#expansion-6-from-file-to-cycle" id="toc-expansion-6-from-file-to-cycle">Expansion 6: From File to
+Cycle</a></li>
+<li><a href="#the-three-key-concepts" id="toc-the-three-key-concepts">The Three Key Concepts</a></li>
+<li><a href="#why-this-section-has-no-audio-code" id="toc-why-this-section-has-no-audio-code">Why This Section Has No
+Audio Code</a></li>
+<li><a href="#what-you-should-internalize" id="toc-what-you-should-internalize">What You Should
+Internalize</a></li>
+</ul></li>
+<li><a href="#tutorial-buffer-pipelines-teaser" id="toc-tutorial-buffer-pipelines-teaser">Tutorial: Buffer Pipelines
+(Teaser)</a>
+<ul>
+<li><a href="#the-next-level" id="toc-the-next-level">The Next
+Level</a></li>
+<li><a href="#a-taste" id="toc-a-taste">A Taste</a></li>
+<li><a href="#expansion-1-what-is-a-pipeline" id="toc-expansion-1-what-is-a-pipeline">Expansion 1: What Is a
+Pipeline?</a></li>
+<li><a href="#expansion-2-bufferoperation-types" id="toc-expansion-2-bufferoperation-types">Expansion 2: BufferOperation
+Types</a></li>
+<li><a href="#expansion-3-the-on_capture_processing-pattern" id="toc-expansion-3-the-on_capture_processing-pattern">Expansion 3: The
+<code>on_capture_processing</code> Pattern</a></li>
+<li><a href="#expansion-4-why-this-matters" id="toc-expansion-4-why-this-matters">Expansion 4: Why This
+Matters</a></li>
+<li><a href="#what-happens-next" id="toc-what-happens-next">What Happens
+Next</a></li>
+<li><a href="#try-it-optional" id="toc-try-it-optional">Try It
+(Optional)</a></li>
+<li><a href="#the-philosophy" id="toc-the-philosophy">The
+Philosophy</a></li>
+<li><a href="#next-the-full-pipeline-tutorial" id="toc-next-the-full-pipeline-tutorial">Next: The Full Pipeline
+Tutorial</a></li>
+</ul></li>
+</ul>
 <h2 id="the-simplest-first-step">The Simplest First Step</h2>
 <p>Run this code. The file is loaded into memory.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// In your src/user_project.hpp compose() function:</span></span>
