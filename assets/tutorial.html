@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>MayaFlux Tutorial: Sculpting Data Part I</title>
+  <title>SculptingData</title>
   <style>
 
 code{white-space: pre-wrap;}
@@ -490,9 +490,8 @@ font-style: italic;
 </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">MayaFlux Tutorial: Sculpting Data Part I</h1>
-</header>
+<h1 id="mayaflux-tutorial-sculpting-data-part-i">MayaFlux Tutorial:
+Sculpting Data Part I</h1>
 <p>In MayaFlux, data isn’t something you use -&gt; it’s something you
 shape. Sound, light, numbers, all share the same substrate. You don’t
 generate a waveform; you sculpt a pattern of information and let it
@@ -541,8 +540,8 @@ Memory, Ownership, and Smart Pointers</a></li>
 <code>vega</code>?</a></li>
 <li><a href="#expansion-4-the-containers-processor" id="toc-expansion-4-the-containers-processor">Expansion 4: The
 Container’s Processor</a></li>
-<li><a href="#expansion-5-what-.read-does-not-do" id="toc-expansion-5-what-.read-does-not-do">Expansion 5: What
-<code>.read()</code> Does NOT Do</a></li>
+<li><a href="#expansion-5-what-.read_audio-does-not-do" id="toc-expansion-5-what-.read_audio-does-not-do">Expansion 5: What
+<code>.read_audio()</code> Does NOT Do</a></li>
 </ul></li>
 <li><a href="#tutorial-connect-to-buffers" id="toc-tutorial-connect-to-buffers">Tutorial: Connect to Buffers</a>
 <ul>
@@ -641,7 +640,7 @@ Tutorial</a></li>
 <div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// In your src/user_project.hpp compose() function:</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> compose<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/your/file.wav&quot;</span><span class="op">);</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/your/file.wav&quot;</span><span class="op">);</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Replace <code>&quot;path/to/your/file.wav&quot;</code> with an actual path to a
 <code>.wav</code> file.</p>
@@ -665,8 +664,8 @@ section shows you what just happened.</p>
 Container?</h2>
 <details>
 <p><parameter name="open"></p>
-<p>When you call <code>vega.read()</code>, you’re not just reading bytes
-from disk and forgetting them. You’re creating a
+<p>When you call <code>vega.read_audio()</code>, you’re not just reading
+bytes from disk and forgetting them. You’re creating a
 <strong>Container</strong>—a structure that holds:</p>
 <ul>
 <li><strong>The audio data itself</strong> (all samples as numbers,
@@ -682,7 +681,7 @@ channels, memory layout)</li>
 <strong>active creative material</strong>. It knows its own shape. It
 can tell you about regions within itself. It can be queried,
 transformed, integrated with other Containers.</p>
-<p>When <code>vega.read(&quot;file.wav&quot;)</code> runs, MayaFlux:</p>
+<p>When <code>vega.read_audio(&quot;file.wav&quot;)</code> runs, MayaFlux:</p>
 <ol type="1">
 <li>Creates a <code>SoundFileReader</code> and initializes FFmpeg</li>
 <li>Checks if the file is readable</li>
@@ -717,10 +716,10 @@ automatically tracks how many parts of your program are using a
 Container. When the last reference disappears, the memory is freed
 automatically.</p>
 <p>When you write:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;file.wav&quot;</span><span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;file.wav&quot;</span><span class="op">);</span></span></code></pre></div>
 <p>What’s actually happening is:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>shared_ptr<span class="op">&lt;</span>MayaFlux<span class="op">::</span>Kakshya<span class="op">::</span>SoundFileContainer<span class="op">&gt;</span> sound_container <span class="op">=</span> </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* vega.read() internally creates and returns a shared_ptr */</span><span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>shared_ptr<span class="op">&lt;</span>MayaFlux<span class="op">::</span>Kakshya<span class="op">::</span>SoundFileContainer<span class="op">&gt;</span> sound_container <span class="op">=</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* vega.read_audio() internally creates and returns a shared_ptr */</span><span class="op">;</span></span></code></pre></div>
 <p>You don’t see <code>std::shared_ptr</code>. You see
 <code>auto</code>. But MayaFlux is using it. This means:</p>
 <ul>
@@ -732,7 +731,7 @@ cleanup.</li>
 <li><strong>When the last reference is gone</strong>, memory is
 automatically released.</li>
 </ul>
-<p>This is why <code>vega.read()</code> is safe. The complexity of
+<p>This is why <code>vega.read_audio()</code> is safe. The complexity of
 memory management exists—it’s just not your problem.</p>
 </details>
 <hr />
@@ -781,9 +780,9 @@ this:</p>
 <span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> processor <span class="op">=</span> <span class="bu">std::</span>dynamic_pointer_cast<span class="op">&lt;</span>Kakshya<span class="op">::</span>ContiguousAccessProcessor<span class="op">&gt;(</span></span>
 <span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    sound_container<span class="op">-&gt;</span>get_default_processor<span class="op">());</span></span>
 <span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>processor<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> output_shape <span class="op">=</span> <span class="op">{</span> </span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        MayaFlux<span class="op">::</span>Config<span class="op">::</span>get_buffer_size<span class="op">(),</span> </span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        sound_container<span class="op">-&gt;</span>get_num_channels<span class="op">()</span> </span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> output_shape <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        MayaFlux<span class="op">::</span>Config<span class="op">::</span>get_buffer_size<span class="op">(),</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        sound_container<span class="op">-&gt;</span>get_num_channels<span class="op">()</span></span>
 <span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
 <span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    processor<span class="op">-&gt;</span>set_output_size<span class="op">(</span>output_shape<span class="op">);</span></span>
 <span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    processor<span class="op">-&gt;</span>set_auto_advance<span class="op">(</span><span class="kw">true</span><span class="op">);</span></span>
@@ -803,7 +802,7 @@ effort” These often lead to confinement and confusion.</li>
 <p>However, the above code snippet is verbose for something so
 simple.</p>
 <p><code>vega</code> says: “You just want to load a file? Say so.”</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;file.wav&quot;</span><span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;file.wav&quot;</span><span class="op">);</span></span></code></pre></div>
 <p>Same machinery underneath. Same FFmpeg integration. Same resampling.
 Same deinterleaving. Same processor setup. Same safety.</p>
 <p><strong>What <code>vega</code> does:</strong></p>
@@ -853,7 +852,8 @@ independently)</li>
 <p>When you later connect this Container to buffers (in the next
 section), the processor is what actually feeds the data—it’s the active
 mechanism.</p>
-<p><code>vega.read()</code> configures this processor automatically:</p>
+<p><code>vega.read_audio()</code> configures this processor
+automatically:</p>
 <ul>
 <li>Sets output size to your project’s buffer size</li>
 <li>Enables auto-advance (keeps moving through the file)</li>
@@ -865,19 +865,19 @@ data—they’re <em>active</em>, with built-in logic for how they should be
 consumed.</p>
 </details>
 <hr />
-<h2 id="expansion-5-what-.read-does-not-do">Expansion 5: What
-<code>.read()</code> Does NOT Do</h2>
+<h2 id="expansion-5-what-.read_audio-does-not-do">Expansion 5: What
+<code>.read_audio()</code> Does NOT Do</h2>
 <details>
 <p><parameter name="open"></p>
 <p>This is important:</p>
-<p><strong><code>.read()</code> does NOT:</strong></p>
+<p><strong><code>.read_audio()</code> does NOT:</strong></p>
 <ul>
 <li>Start playback</li>
 <li>Create buffers</li>
 <li>Connect to your audio hardware</li>
 <li>Route data anywhere</li>
 </ul>
-<p><strong><code>.read()</code> DOES:</strong></p>
+<p><strong><code>.read_audio()</code> DOES:</strong></p>
 <ul>
 <li>Read file from disk</li>
 <li>Decode audio (handle any format: WAV, MP3, FLAC, etc. via
@@ -905,7 +905,7 @@ then connect—is more powerful than one-step automatic playback.</p>
 <h1 id="tutorial-connect-to-buffers">Tutorial: Connect to Buffers</h1>
 <h2 id="the-next-step">The Next Step</h2>
 <p>You have a Container loaded. Now you need to send it somewhere.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">);</span></span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">);</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> MayaFlux<span class="op">::</span>hook_sound_container_to_buffers<span class="op">(</span>sound_container<span class="op">);</span></span></code></pre></div>
 <p>Run this code. Your file plays.</p>
 <p>The Container + the hook call—together they form the path from disk
@@ -1124,11 +1124,11 @@ Buffers</h2>
 <summary>
 Click to expand: What You Can Do With the Buffers
 </summary>
-<p>When you call <code>vega.read() | Audio</code>, MayaFlux creates the
-buffers internally. But now, with the ability to get those buffers back,
-you have access to them:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">);</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> vega<span class="op">.</span>get_last_created_container_buffers<span class="op">();</span></span>
+<p>When you call <code>vega.read_audio() | Audio</code>, MayaFlux
+creates the buffers internally. But now, with the ability to get those
+buffers back, you have access to them:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">);</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> MayaFlux<span class="op">::</span>get_last_created_container_buffers<span class="op">();</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Now you have the buffers as a vector:</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">// buffers[0] → channel 0</span></span>
@@ -1151,26 +1151,26 @@ writes to the hardware. But you can modify that chain.</p>
 <p>This is the foundation for Section 3. You load a file, get the
 buffers, access their chains, and inject processing into those
 chains.</p>
+##
 </details>
-<hr />
 <h2 id="the-fluent-vs.-explicit-comparison">The Fluent vs. Explicit
 Comparison</h2>
 <h3 id="fluent-what-happens-behind-the-scenes">Fluent (What happens
 behind the scenes)</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">)</span> <span class="op">|</span> Audio<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">)</span> <span class="op">|</span> Audio<span class="op">;</span></span></code></pre></div>
 <p>This single line does all of the above: creates a Container, creates
 per-channel buffers, hooks them to the audio hardware, and starts
 playback. No file plays until the <code>| Audio</code> operator, which
 is when the connection happens.</p>
 <h3 id="explicit-whats-actually-happening">Explicit (What’s actually
 happening)</h3>
-<div class="sourceCode" id="cb13"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">);</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> vega<span class="op">.</span>get_last_created_container_buffers<span class="op">();</span></span>
+<div class="sourceCode" id="cb13"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">);</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> MayaFlux<span class="op">::</span>get_last_created_container_buffers<span class="op">();</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">// File is loaded, buffers exist, but no connection to hardware yet</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Buffers have chains, but nothing is using them</span></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">// To actually play, you&#39;d need to ensure they&#39;re registered</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">// (vega.read() | Audio does this automatically)</span></span></code></pre></div>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">// (vega.read_audio() | Audio does this automatically)</span></span></code></pre></div>
 <p><strong>Understanding the difference:</strong></p>
 <ul>
 <li>The fluent version (<code>| Audio</code>) triggers buffer creation
@@ -1182,8 +1182,8 @@ modify them <em>before</em> hooking to hardware</li>
 <hr />
 <h2 id="try-it">Try It</h2>
 <div class="sourceCode" id="cb14"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> compose<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/your/file.wav&quot;</span><span class="op">)</span> <span class="op">|</span> Audio<span class="op">;</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/your/file.wav&quot;</span><span class="op">)</span> <span class="op">|</span> Audio<span class="op">;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// File plays</span></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Replace <code>&quot;path/to/your/file.wav&quot;</code> with an actual path.</p>
@@ -1206,8 +1206,8 @@ into active, real-time audio processing.</p>
 <h1 id="tutorial-buffers-own-chains">Tutorial: Buffers Own Chains</h1>
 <h2 id="the-simplest-path">The Simplest Path</h2>
 <p>You have buffers. You can modify what flows through them.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">);</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> vega<span class="op">.</span>get_last_created_container_buffers<span class="op">();</span></span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">)</span> <span class="op">|</span> Audio<span class="op">;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> MayaFlux<span class="op">::</span>get_last_created_container_buffers<span class="op">();</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> filter <span class="op">=</span> vega<span class="op">.</span>IIR<span class="op">({</span><span class="fl">0.1</span><span class="op">,</span> <span class="fl">0.2</span><span class="op">,</span> <span class="fl">0.1</span><span class="op">},</span> <span class="op">{</span><span class="fl">1.0</span><span class="op">,</span> <span class="op">-</span><span class="fl">0.6</span><span class="op">});</span></span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> filter_processor <span class="op">=</span> MayaFlux<span class="op">::</span>create_processor<span class="op">&lt;</span>MayaFlux<span class="op">::</span>Buffers<span class="op">::</span>FilterProcessor<span class="op">&gt;(</span>buffers<span class="op">[</span><span class="dv">0</span><span class="op">],</span> filter<span class="op">);</span></span></code></pre></div>
@@ -1418,9 +1418,9 @@ them.</p>
 <hr />
 <h2 id="try-it-1">Try It</h2>
 <div class="sourceCode" id="cb27"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> compose<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/your/file.wav&quot;</span><span class="op">);</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> buffers <span class="op">=</span> vega<span class="op">.</span>get_last_created_container_buffers<span class="op">();</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/your/file.wav&quot;</span><span class="op">)</span> <span class="op">|</span> Audio<span class="op">;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> buffers <span class="op">=</span> MayaFlux<span class="op">::</span>get_last_created_container_buffers<span class="op">();</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> filter <span class="op">=</span> vega<span class="op">.</span>IIR<span class="op">({</span><span class="fl">0.1</span><span class="op">,</span> <span class="fl">0.2</span><span class="op">,</span> <span class="fl">0.1</span><span class="op">},</span> <span class="op">{</span><span class="fl">1.0</span><span class="op">,</span> <span class="op">-</span><span class="fl">0.6</span><span class="op">});</span></span>
 <span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> filter_processor <span class="op">=</span> MayaFlux<span class="op">::</span>create_processor<span class="op">&lt;</span>MayaFlux<span class="op">::</span>Buffers<span class="op">::</span>FilterProcessor<span class="op">&gt;(</span>buffers<span class="op">[</span><span class="dv">0</span><span class="op">],</span> filter<span class="op">);</span></span>
 <span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
@@ -1436,12 +1436,15 @@ result. That’s the foundation for everything that follows.</p>
 insert a processing node between the Container and the buffers. And
 you’ll see why this architecture—buffers as relays, not
 generators—enables powerful real-time transformation.</p>
+<p>For a comprehensive tutorial on buffer processors and related
+concepts, visit the <a href="./ProcessingExpression.md">Buffer
+Processors Tutorial</a>.</p>
 <h1 id="tutorial-timing-streams-and-bridges">Tutorial: Timing, Streams,
 and Bridges</h1>
 <h2 id="the-current-continous-flow">The Current Continous Flow</h2>
 <p>What you’ve done so far is simple and powerful:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">);</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> vega<span class="op">.</span>get_last_created_container_buffers<span class="op">();</span></span>
+<div class="sourceCode" id="cb29"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> sound_container <span class="op">=</span> vega<span class="op">.</span>read_audio<span class="op">(</span><span class="st">&quot;path/to/file.wav&quot;</span><span class="op">)</span> <span class="op">|</span> Audio<span class="op">;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> buffers <span class="op">=</span> MayaFlux<span class="op">::</span>get_last_created_container_buffers<span class="op">();</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> filter <span class="op">=</span> vega<span class="op">.</span>IIR<span class="op">({</span><span class="fl">0.1</span><span class="op">,</span> <span class="fl">0.2</span><span class="op">,</span> <span class="fl">0.1</span><span class="op">},</span> <span class="op">{</span><span class="fl">1.0</span><span class="op">,</span> <span class="op">-</span><span class="fl">0.6</span><span class="op">});</span></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> fp <span class="op">=</span> MayaFlux<span class="op">::</span>create_processor<span class="op">&lt;</span>MayaFlux<span class="op">::</span>Buffers<span class="op">::</span>FilterProcessor<span class="op">&gt;(</span>buffers<span class="op">[</span><span class="dv">0</span><span class="op">],</span> filter<span class="op">);</span></span></code></pre></div>
 <p>This flow is designed for <strong>full-file playback</strong>:</p>
@@ -1786,8 +1789,8 @@ file</li>
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> pipeline <span class="op">=</span> MayaFlux<span class="op">::</span>create_buffer_pipeline<span class="op">();</span></span>
 <span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Set strategy to streaming (process as data arrives)</span></span>
 <span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    pipeline<span class="op">-&gt;</span>with_strategy<span class="op">(</span>ExecutionStrategy<span class="op">::</span>STREAMING<span class="op">);</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Declare the flow: </span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Declare the flow:</span></span>
 <span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    pipeline</span>
 <span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;</span> BufferOperation<span class="op">::</span>capture_file_from<span class="op">(</span><span class="st">&quot;path/to/audio/.wav&quot;</span><span class="op">,</span> <span class="dv">0</span><span class="op">)</span></span>
 <span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>               <span class="op">.</span>for_cycles<span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="co">// Essential for streaming</span></span>
